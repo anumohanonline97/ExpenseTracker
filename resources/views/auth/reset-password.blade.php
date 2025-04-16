@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>PersonalExpenseTracker - Login</title>
+    <title>PersonalExpenseTracker - Reset Password</title>
 
     <!-- Custom fonts for this template-->
     <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -22,7 +22,6 @@
 
     <!-- Axios CDN -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
 </head>
 
 <body class="bg-gradient-primary">
@@ -38,29 +37,27 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block bg-password-image"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Login</h1>
+                                        <h1 class="h4 text-gray-900 mb-2">Reset Password</h1>
                                     </div>
-                                    <form id="loginForm" class="user">
+                                    <form id="resetForm" class="user">
                                         <div class="form-group">
-                                            <input type="email" class="form-control form-control-user"
-                                                id="email" name="email" aria-describedby="emailHelp"
-                                                placeholder="Enter Email Address...">
+                                            <input type="password" class="form-control form-control-user"
+                                                id="password" name="password" aria-describedby="emailHelp"
+                                                placeholder="Password">
                                         </div>
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user"
-                                                id="password" name="password" placeholder="Password">
+                                                id="password_confirmation" name="password_confirmation" aria-describedby="emailHelp"
+                                                placeholder="Confirm Password">
                                         </div>
                                         <button type="submit" class="btn btn-primary btn-user btn-block">
-                                            Login
+                                            Reset Password
                                         </button>
                                     </form>
-                                    <hr>
-                                    <div class="text-center">
-                                        <a class="small" href="{{ url('signup') }}">Create an Account!</a>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -84,33 +81,50 @@
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
     <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+document.getElementById('resetForm').addEventListener('submit', function (e) {
+    e.preventDefault();
 
-        const email    = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+    const password = document.getElementById('password').value;
+    const password_confirmation = document.getElementById('password_confirmation').value;
 
-        axios.post("{{ url('api/login') }}", {
-            email: email,
-            password: password
-        })
-        .then(function (response) {
+    if (password !== password_confirmation) {
+        alert("Passwords do not match.");
+        return;
+    }
 
-            localStorage.setItem('access_token', response.data.access_token);
+    const token = localStorage.getItem('access_token'); 
 
-            window.location.href = "{{ url('dashboard') }}";
-        })
-        .catch(function (error) {
-            if (error.response && error.response.data) {
- 
-                let msg = error.response.data.message || 'Login failed';
-                alert(msg);
-            } else {
-                alert('An unexpected error occurred.');
-            }
-        });
+    if (!token) {
+        alert("Unauthorized: Please log in first.");
+        return;
+    }
+
+    axios.post("{{ url('api/passwordreset') }}", {
+        password: password,
+        password_confirmation: password_confirmation
+    }, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    .then(function (response) {
+        alert("Password reset successful!");
+        localStorage.removeItem('access_token'); 
+        window.location.href = "{{ url('/login') }}";
+    })
+    .catch(function (error) {
+        if (error.response && error.response.data && error.response.data.errors) {
+            const errors = error.response.data.errors;
+            let messages = Object.values(errors).flat().join('\n');
+            alert(messages);
+        } else if (error.response && error.response.data && error.response.data.message) {
+            alert(error.response.data.message);
+        } else {
+            alert("Something went wrong. Please try again.");
+        }
     });
-    </script>
+});
+</script>
 
 
 </body>
