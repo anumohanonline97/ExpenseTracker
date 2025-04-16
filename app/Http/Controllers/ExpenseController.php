@@ -14,6 +14,17 @@ class ExpenseController extends Controller
         return response()->json($expenses);
     }
 
+    public function show($id)
+    {
+        $expense = Expense::with('category')->find($id);
+
+        if (!$expense) {
+            return response()->json(['message' => 'Expense not found'], 404);
+        }
+
+        return response()->json($expense);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
