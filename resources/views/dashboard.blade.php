@@ -185,7 +185,7 @@
 
                         <!-- Area Chart -->
                         <div class="col-xl-6 col-lg-7">
-                            <div class="card shadow mb-4">
+                            <div class="card shadow mb-4 pb-5 pt-5">
                                 <h4>List Categories</h4>
                             <table class="table table-bordered" id="categoryTable">
                                 <thead>
