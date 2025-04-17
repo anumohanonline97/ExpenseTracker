@@ -19,6 +19,10 @@ Route::middleware('auth:sanctum')->group(function () {
     //Expenses API routes
     Route::post('/expenses', [ExpenseController::class, 'store']);
     Route::get('/expenses', [ExpenseController::class, 'index']);
+    //Chart
+    Route::get('/expenses/analytics', [ExpenseController::class, 'analytics']);
+    //Expense Filter
+    Route::get('/expenses/filter', [ExpenseController::class, 'filter']);
     Route::put('/expenses/{id}', [ExpenseController::class, 'update']);
     Route::get('/expenses/{id}', [ExpenseController::class, 'show']);
     Route::delete('/expenses/{id}', [ExpenseController::class, 'destroy']);

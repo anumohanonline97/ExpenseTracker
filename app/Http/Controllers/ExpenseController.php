@@ -63,4 +63,36 @@ class ExpenseController extends Controller
 
         return response()->json(['message' => 'Expense deleted successfully.']);
     }
+
+    public function filter(Request $request)
+    {
+        $query = Expense::with('category');
+
+        if ($request->has('category_id') && $request->category_id != '') {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->has('from_date') && $request->has('to_date')) {
+            $query->whereBetween('date', [$request->from_date, $request->to_date]);
+        }
+
+        return response()->json($query->orderBy('date', 'desc')->get());
+    }
+
+    public function analytics()
+    {
+        $data = Expense::with('category')
+            ->selectRaw('category_id, SUM(amount) as total')
+            ->groupBy('category_id')
+            ->with('category')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'category' => $item->category->name ?? 'Unknown',
+                    'total' => $item->total
+                ];
+            });
+
+        return response()->json($data);
+    }
 }
