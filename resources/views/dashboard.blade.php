@@ -46,7 +46,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -185,7 +185,7 @@
 
                         <!-- Area Chart -->
                         <div class="col-xl-6 col-lg-7">
-                            <div class="card shadow mb-4">
+                            <div class="card shadow mb-4 pb-5 pt-5">
                                 <h4>List Categories</h4>
                             <table class="table table-bordered" id="categoryTable">
                                 <thead>
@@ -437,27 +437,40 @@
 </script>
 <script>
     function renderExpensesTable(expenses) {
-        const tbody = document.getElementById('expensesTableBody');
-        tbody.innerHTML = ''; 
+    const tbody = document.getElementById('expensesTableBody');
+    tbody.innerHTML = ''; 
 
-        if (!expenses.length) {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="4" class="text-center">No expenses found.</td>`;
-            tbody.appendChild(row);
-            return;
-        }
-
-        expenses.forEach(exp => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${exp.date}</td>
-                <td>${exp.category?.name || 'N/A'}</td>
-                <td>${exp.description}</td>
-                <td>${exp.amount}</td>
-            `;
-            tbody.appendChild(row);
-        });
+    if (!expenses.length) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="5" class="text-center">No expenses found.</td>`;
+        tbody.appendChild(row);
+        return;
     }
+
+    let total = 0;
+
+    expenses.forEach(exp => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${exp.date}</td>
+            <td>${exp.category?.name || 'N/A'}</td>
+            <td>${exp.description}</td>
+            <td>${parseFloat(exp.amount).toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+
+        total += parseFloat(exp.amount);
+    });
+
+    // Add total row
+    const totalRow = document.createElement('tr');
+    totalRow.innerHTML = `
+        <td colspan="3" class="text-right font-weight-bold">Total</td>
+        <td class="font-weight-bold">${total.toFixed(2)}</td>
+    `;
+    tbody.appendChild(totalRow);
+}
+
 </script>
         </div>
 
@@ -542,26 +555,6 @@
 <a class="scroll-to-top rounded" href="#page-top">
 <i class="fas fa-angle-up"></i>
 </a>
-
-<!-- Logout Modal-->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-aria-hidden="true">
-<div class="modal-dialog" role="document">
-<div class="modal-content">
-<div class="modal-header">
-<h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-<button class="close" type="button" data-dismiss="modal" aria-label="Close">
-    <span aria-hidden="true">×</span>
-</button>
-</div>
-<div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-<div class="modal-footer">
-<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-<a class="btn btn-primary" href="login.html">Logout</a>
-</div>
-</div>
-</div>
-</div>
 
 <!-- Bootstrap core JavaScript-->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
